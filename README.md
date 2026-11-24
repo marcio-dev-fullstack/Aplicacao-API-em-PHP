@@ -1,29 +1,25 @@
-<div align="center">
+# 🛡️ FinTech API v1 - Laravel 11 (SaaS Backend)
 
-# 🛡️ FinTech API v1 — SaaS Backend
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-**API RESTful de alta disponibilidade para gestão financeira e transferências entre contas bancárias.**
-
-[![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-
-</div>
+API RESTful corporativa para gestão financeira e transferências entre contas bancárias, construída com **Laravel 11**, **PHP 8.3**, **PostgreSQL** e **Redis**.
 
 ---
 
 ## 📋 Sumário
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Tecnologias & Stack](#-tecnologias--stack)
-- [Segurança (OWASP API Top 10)](#-segurança-owasp-api-top-10)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Instalação & Execução](#-instalação--execução)
-- [Documentação dos Endpoints](#-documentação-dos-endpoints)
-- [Testes Automatizados](#-testes-automatizados)
-- [Licença & Contato](#-licença--contato)
+* [Sobre o Projeto](#-sobre-o-projeto)
+* [Tecnologias & Stack](#-tecnologias--stack)
+* [Segurança (OWASP API Top 10)](#-segurança-owasp-api-top-10)
+* [Estrutura do Projeto](#-estrutura-do-projeto)
+* [Instalação & Execução](#-instalação--execução)
+* [Documentação dos Endpoints](#-documentação-dos-endpoints)
+* [Testes Automatizados](#-testes-automatizados)
+* [Licença & Contato](#-licença--contato)
 
 ---
 
@@ -50,19 +46,19 @@ A **FinTech API v1** é uma solução backend projetada com foco em **segurança
 ## 🔒 Segurança (OWASP API Top 10)
 
 1. **Proteção contra BOLA / IDOR (`API1:2023`)**
-   - Implementação de `AccountPolicy` garantindo que usuários autenticados acessem e movimentem exclusivamente suas próprias contas.
+   * Implementação de `AccountPolicy` garantindo que usuários autenticados acessem e movimentem exclusivamente suas próprias contas.
 2. **Prevenção de Race Conditions & Concorrência (`API8:2023`)**
-   - Uso de **Locks Pessimistas** (`lockForUpdate()`) dentro de transações atômicas (`DB::transaction()`), bloqueando saques ou transferências simultâneas com saldo insuficiente.
+   * Uso de **Locks Pessimistas** (`lockForUpdate()`) dentro de transações atômicas (`DB::transaction()`), bloqueando saques ou transferências simultâneas com saldo insuficiente.
 3. **Precisão Monetária (Zero Floating-Point Errors)**
-   - Todos os valores e saldos são armazenados e processados em **centavos** (`bigInteger`), eliminando falhas de arredondamento.
+   * Todos os valores e saldos são armazenados e processados em **centavos** (`bigInteger`), eliminando falhas de arredondamento.
 4. **Rate Limiting & Anti-Brute Force (`API4:2023`)**
-   - Controle de taxa via Redis: máximo de **10 req/min** no login e **30 req/min** em operações de transferência.
+   * Controle de taxa via Redis: máximo de **10 req/min** no login e **30 req/min** em operações de transferência.
 5. **Gestão Segura de Sessões (`API2:2023`)**
-   - Tokens com expiração configurada, revogação imediata no logout e senhas protegidas com **Bcrypt / Argon2id**.
+   * Tokens com expiração configurada, revogação imediata no logout e senhas protegidas com **Bcrypt / Argon2id**.
 6. **Security Headers HTTP (`API7:2023`)**
-   - Middleware global injetando `X-Frame-Options`, `X-Content-Type-Options`, `Content-Security-Policy`, `Strict-Transport-Security` e `Referrer-Policy`.
+   * Middleware global injetando `X-Frame-Options`, `X-Content-Type-Options`, `Content-Security-Policy`, `Strict-Transport-Security` e `Referrer-Policy`.
 7. **Idempotência de Transações**
-   - Suporte ao cabeçalho `X-Idempotency-Key` para impedir duplicidade de cobranças em retentativas de rede.
+   * Suporte ao cabeçalho `X-Idempotency-Key` para impedir duplicidade de cobranças em retentativas de rede.
 
 ---
 
@@ -129,7 +125,7 @@ fintech-api-v1/
 ## ⚡ Instalação & Execução
 
 ### Pré-requisitos
-- **Docker** e **Docker Compose** instalados na máquina.
+* **Docker** e **Docker Compose** instalados na máquina.
 
 ### Passo a Passo
 
@@ -175,8 +171,6 @@ fintech-api-v1/
 | `POST` | `/api/v1/auth/logout` | Revoga o token de acesso atual | Sim |
 | `GET` | `/api/v1/auth/me` | Retorna os dados do usuário autenticado | Sim |
 
----
-
 ### 🏦 Contas Bancárias
 
 | Método | Endpoint | Descrição | Auth |
@@ -184,8 +178,6 @@ fintech-api-v1/
 | `GET` | `/api/v1/accounts` | Lista todas as contas pertencentes ao usuário logado | Sim |
 | `GET` | `/api/v1/accounts/{account}/balance` | Consulta o saldo atual da conta (validado via `AccountPolicy`) | Sim |
 | `GET` | `/api/v1/accounts/{account}/statement` | Retorna o extrato paginado de movimentações | Sim |
-
----
 
 ### 💸 Transações Financeiras
 
@@ -213,7 +205,7 @@ Accept: application/json
   "amount": 15000
 }
 ```
-> *Nota: O campo `amount` representa valores em centavos (`15000` = **R$ 150,00**).*
+> *Nota: O campo `amount` representa valores em centavos (`15000` = **R\$ 150,00**).*
 
 ---
 
@@ -221,11 +213,11 @@ Accept: application/json
 
 A suíte de testes de integração valida os fluxos críticos da aplicação:
 
-- ✅ Registro e autenticação de usuários
-- ✅ Transferência bem-sucedida entre contas distintas
-- ✅ Bloqueio de transação por saldo insuficiente (`InsufficientBalanceException`)
-- ✅ Proteção contra **BOLA/IDOR** (tentativa de movimentar conta de terceiros)
-- ✅ Garantia de idempotência em requisições repetidas
+* ✅ Registro e autenticação de usuários
+* ✅ Transferência bem-sucedida entre contas distintas
+* ✅ Bloqueio de transação por saldo insuficiente (`InsufficientBalanceException`)
+* ✅ Proteção contra **BOLA/IDOR** (tentativa de movimentar conta de terceiros)
+* ✅ Garantia de idempotência em requisições repetidas
 
 Para executar os testes:
 ```bash
@@ -239,18 +231,17 @@ docker compose exec app php artisan test
 **Licença:** Zentix Engenharia & Tecnologia
 
 ### Quer dar vida ao seu projeto?
+
 Entre em contato conosco e solicite uma avaliação técnica ou orçamento sem compromisso.
 
-- 📲 **WhatsApp:** [(62) 99646-6033](https://wa.me/5562996466033)
-- 📍 **Endereço:** Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
-- 🌐 **Website:** [zentix.eng.br](http://zentix.eng.br/)
+* 📲 **WhatsApp:** <a href="https://wa.me/5562996466033" target="_blank" rel="noopener noreferrer">(62) 99646-6033</a>
+* 📍 **Endereço:** Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
+* 🌐 **Website:** <a href="http://zentix.eng.br/" target="_blank" rel="noopener noreferrer">zentix.eng.br</a>
 
 ---
 
-<div align="center">
-
-**Zentix Engenharia & Tecnologia**  
-© 2022–2026. Todos os direitos reservados.  
-Desenvolvido por **[ZENTIX](http://zentix.eng.br/)**
-
-</div>
+<p align="center">
+  <strong>Zentix Engenharia & Tecnologia</strong><br>
+  © 2022–2026. Todos os direitos reservados.<br>
+  Desenvolvido por: <a href="http://zentix.eng.br/" target="_blank" rel="noopener noreferrer"><strong>ZENTIX</strong></a>
+</p>
