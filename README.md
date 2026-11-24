@@ -1,135 +1,256 @@
-# 🛡️ FinTech API v1 - Laravel 11 (SaaS Backend)
+<div align="center">
 
-API RESTful para gestão financeira e transferências entre contas bancárias, construída com **Laravel 11**, **PHP 8.3**, **PostgreSQL** e **Redis**. Desenvolvida com foco em **segurança avançada**, **integridade transacional**, **arquitetura limpa** e **proteção contra vulnerabilidades OWASP API Top 10**.
+# 🛡️ FinTech API v1 — SaaS Backend
+
+**API RESTful de alta disponibilidade para gestão financeira e transferências entre contas bancárias.**
+
+[![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
+[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+
+</div>
+
+---
+
+## 📋 Sumário
+
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Tecnologias & Stack](#-tecnologias--stack)
+- [Segurança (OWASP API Top 10)](#-segurança-owasp-api-top-10)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Instalação & Execução](#-instalação--execução)
+- [Documentação dos Endpoints](#-documentação-dos-endpoints)
+- [Testes Automatizados](#-testes-automatizados)
+- [Licença & Contato](#-licença--contato)
+
+---
+
+## 📖 Sobre o Projeto
+
+A **FinTech API v1** é uma solução backend projetada com foco em **segurança avançada**, **integridade transacional (ACID)** e **arquitetura limpa**. O sistema garante consistência financeira em cenários de alta concorrência e implementa defesas nativas contra as principais vulnerabilidades listadas no **OWASP API Security Top 10**.
 
 ---
 
 ## 🚀 Tecnologias & Stack
-- **Framework:** Laravel 11 (PHP 8.3)
-- **Autenticação:** Laravel Sanctum (Tokens Revogáveis Stateless)
-- **Banco de Dados:** PostgreSQL 16 (Transações ACID + Pessimistic Locking)
-- **Cache & Rate Limiting:** Redis 7
-- **Conteinerização:** Docker & Docker Compose
-- **Testes:** PHPUnit / Pest PHP
-- **Padrões de Código:** PSR-12, Form Requests, Services, API Resources, Policies
+
+| Camada | Tecnologia | Finalidade |
+| :--- | :--- | :--- |
+| **Linguagem** | PHP 8.3 | Tipagem estrita, performance e recursos modernos |
+| **Framework** | Laravel 11 | Arquitetura MVC, Eloquent ORM, Services e Policies |
+| **Autenticação** | Laravel Sanctum | Tokens revogáveis *stateless* com expiração |
+| **Banco de Dados** | PostgreSQL 16 | Transações ACID e *Pessimistic Locking* |
+| **Cache & Filas** | Redis 7 | *Rate Limiting* distribuído e chaves de idempotência |
+| **Infraestrutura** | Docker & Nginx | Ambiente isolado, reproduzível e pronto para produção |
+| **Qualidade** | PHPUnit / Pest & PSR-12 | Testes automatizados e padronização de código |
 
 ---
 
-## 🔒 Práticas de Segurança Implementadas (OWASP API Top 10)
+## 🔒 Segurança (OWASP API Top 10)
 
-1. **Proteção contra BOLA / IDOR (API1:2023):**
-   - Implementação de `AccountPolicy` para garantir que um usuário autenticado só acesse e execute operações em suas próprias contas bancárias.
-2. **Prevenção de Race Conditions & Concorrência (API8:2023):**
-   - Uso de **Locks Pessimistas** (`lockForUpdate()`) em consultas SQL dentro de uma `DB::transaction()` atômica para impedir que requisições simultâneas efetuem saques ou transferências com saldo insuficiente.
-3. **Valores Monetários sem Erro de Ponto Flutuante:**
-   - Armazenamento de todos os valores e saldos em **centavos** (`integer` / `bigInteger`), eliminando imprecisões de arredondamento de float.
-4. **Rate Limiting & Anti-Brute Force (API4:2023):**
-   - Rate limiting restrito no login (`10 requisições/minuto`) e em transferências (`30 operações/minuto`), usando Redis.
-5. **Autenticação e Revogação Segura (API2:2023):**
-   - Tokens com tempo de expiração, revogação explícita no logout e hashes de senha com **Bcrypt/Argon2id**.
-6. **Headers de Segurança HTTP (API7:2023):**
+1. **Proteção contra BOLA / IDOR (`API1:2023`)**
+   - Implementação de `AccountPolicy` garantindo que usuários autenticados acessem e movimentem exclusivamente suas próprias contas.
+2. **Prevenção de Race Conditions & Concorrência (`API8:2023`)**
+   - Uso de **Locks Pessimistas** (`lockForUpdate()`) dentro de transações atômicas (`DB::transaction()`), bloqueando saques ou transferências simultâneas com saldo insuficiente.
+3. **Precisão Monetária (Zero Floating-Point Errors)**
+   - Todos os valores e saldos são armazenados e processados em **centavos** (`bigInteger`), eliminando falhas de arredondamento.
+4. **Rate Limiting & Anti-Brute Force (`API4:2023`)**
+   - Controle de taxa via Redis: máximo de **10 req/min** no login e **30 req/min** em operações de transferência.
+5. **Gestão Segura de Sessões (`API2:2023`)**
+   - Tokens com expiração configurada, revogação imediata no logout e senhas protegidas com **Bcrypt / Argon2id**.
+6. **Security Headers HTTP (`API7:2023`)**
    - Middleware global injetando `X-Frame-Options`, `X-Content-Type-Options`, `Content-Security-Policy`, `Strict-Transport-Security` e `Referrer-Policy`.
-7. **Idempotência de Transações:**
-   - Suporte ao cabeçalho `X-Idempotency-Key` para evitar cobranças ou transferências duplicadas em retentativas de rede.
+7. **Idempotência de Transações**
+   - Suporte ao cabeçalho `X-Idempotency-Key` para impedir duplicidade de cobranças em retentativas de rede.
 
 ---
 
 ## 📁 Estrutura do Projeto
 
+```text
+fintech-api-v1/
+├── app/
+│   ├── Exceptions/
+│   │   ├── InsufficientBalanceException.php
+│   │   └── InvalidTransactionException.php
+│   ├── Http/
+│   │   ├── Controllers/Api/
+│   │   │   ├── AuthController.php
+│   │   │   ├── AccountController.php
+│   │   │   └── TransactionController.php
+│   │   ├── Middleware/
+│   │   │   └── SecurityHeaders.php
+│   │   ├── Requests/
+│   │   │   ├── RegisterRequest.php
+│   │   │   ├── LoginRequest.php
+│   │   │   └── TransferRequest.php
+│   │   └── Resources/
+│   │       ├── AccountResource.php
+│   │       ├── TransactionResource.php
+│   │       └── UserResource.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Account.php
+│   │   └── Transaction.php
+│   ├── Policies/
+│   │   └── AccountPolicy.php
+│   └── Services/
+│       └── TransferService.php
+├── bootstrap/
+│   └── app.php
+├── config/
+│   ├── auth.php
+│   ├── cors.php
+│   └── sanctum.php
+├── database/
+│   └── migrations/
+│       ├── 0001_01_01_000000_create_users_table.php
+│       ├── 0001_01_01_000001_create_personal_access_tokens_table.php
+│       ├── 2026_01_01_000000_create_accounts_table.php
+│       └── 2026_01_01_000001_create_transactions_table.php
+├── routes/
+│   └── api.php
+├── tests/
+│   ├── Feature/
+│   │   ├── AuthTest.php
+│   │   └── TransferTest.php
+│   └── TestCase.php
+├── docker-compose.yml
+├── Dockerfile
+├── nginx.conf
+├── .env.example
+├── composer.json
+└── README.md
+```
+
 ---
 
-## ⚡ Instalação & Execução com Docker
+## ⚡ Instalação & Execução
 
 ### Pré-requisitos
-- Docker & Docker Compose instalados.
+- **Docker** e **Docker Compose** instalados na máquina.
 
 ### Passo a Passo
 
-1. **Descompactar o arquivo v1.zip e acessar o diretório:**
+1. **Clone o repositório e acesse o diretório:**
    ```bash
-   unzip v1.zip
+   git clone https://github.com/marcio-dev-fullstack/Fintech.git
+   cd Fintech
+   ```
 
-   cd fintech-api-v1
-
+2. **Configure as variáveis de ambiente:**
+   ```bash
    cp .env.example .env
+   ```
 
+3. **Suba os containers (PHP 8.3, PostgreSQL, Redis e Nginx):**
+   ```bash
    docker compose up -d --build
+   ```
 
+4. **Instale as dependências e gere a chave da aplicação:**
+   ```bash
    docker compose exec app composer install
-
    docker compose exec app php artisan key:generate
+   ```
 
+5. **Execute as migrations do banco de dados:**
+   ```bash
    docker compose exec app php artisan migrate
+   ```
 
-   docker compose exec app php artisan test
+> **🌐 Base URL da API:** `http://localhost:8080/api/v1`
 
-   A API estará disponível em http://localhost:8080/api/v1.
+---
 
-📌 Principais Endpoints
-🔑 Autenticação
-POST /api/v1/auth/register — Registrar novo usuário + conta automática
+## 📌 Documentação dos Endpoints
 
-POST /api/v1/auth/login — Autenticar e obter Bearer Token
+### 🔑 Autenticação
 
-POST /api/v1/auth/logout — Revogar token atual (Autenticado)
+| Método | Endpoint | Descrição | Auth |
+| :--- | :--- | :--- | :---: |
+| `POST` | `/api/v1/auth/register` | Registra um novo usuário e cria sua conta automaticamente | Não |
+| `POST` | `/api/v1/auth/login` | Autentica o usuário e retorna o *Bearer Token* | Não |
+| `POST` | `/api/v1/auth/logout` | Revoga o token de acesso atual | Sim |
+| `GET` | `/api/v1/auth/me` | Retorna os dados do usuário autenticado | Sim |
 
-GET /api/v1/auth/me — Detalhes do usuário autenticado
+---
 
-🏦 Contas Bancárias
-GET /api/v1/accounts — Listar contas do usuário logado
+### 🏦 Contas Bancárias
 
-GET /api/v1/accounts/{account}/balance — Consultar saldo da conta (Requer autorização de Policy)
+| Método | Endpoint | Descrição | Auth |
+| :--- | :--- | :--- | :---: |
+| `GET` | `/api/v1/accounts` | Lista todas as contas pertencentes ao usuário logado | Sim |
+| `GET` | `/api/v1/accounts/{account}/balance` | Consulta o saldo atual da conta (validado via `AccountPolicy`) | Sim |
+| `GET` | `/api/v1/accounts/{account}/statement` | Retorna o extrato paginado de movimentações | Sim |
 
-GET /api/v1/accounts/{account}/statement — Extrato de movimentações paginado
+---
 
-💸 Transações Financeiras
-POST /api/v1/transactions/transfer — Realizar transferência atômica com Lock Pessimista
+### 💸 Transações Financeiras
 
-Headers recomendados: Authorization: Bearer <token>, X-Idempotency-Key: <uuid-v4>
+| Método | Endpoint | Descrição | Auth |
+| :--- | :--- | :--- | :---: |
+| `POST` | `/api/v1/transactions/transfer` | Executa transferência atômica entre contas | Sim |
+| `POST` | `/api/v1/transactions/deposit` | Realiza aporte/depósito na conta informada | Sim |
+| `GET` | `/api/v1/transactions/{transaction}` | Exibe o comprovante detalhado de uma transação | Sim |
 
-Body JSON:
+#### Exemplo de Requisição — Transferência (`POST /api/v1/transactions/transfer`)
 
+**Headers:**
+```http
+Authorization: Bearer <seu_token_aqui>
+X-Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+Accept: application/json
+```
+
+**Body (JSON):**
+```json
 {
   "payer_account_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
   "payee_account_id": "9b1deb4d-4c8e-5cfe-0cee-3c1e8c4edc7e",
   "amount": 15000
 }
+```
+> *Nota: O campo `amount` representa valores em centavos (`15000` = **R$ 150,00**).*
 
-*(Note: `15000` centavos = R$ 150,00)*
-POST /api/v1/transactions/deposit — Simulação de depósito/aporte na conta
+---
 
-GET /api/v1/transactions/{transaction} — Consultar comprovante de transação
+## 🧪 Testes Automatizados
 
-🧪 Testes Automatizados
-O projeto conta com testes de integração cobrindo:
+A suíte de testes de integração valida os fluxos críticos da aplicação:
 
-Registro e autenticação de usuários
+- ✅ Registro e autenticação de usuários
+- ✅ Transferência bem-sucedida entre contas distintas
+- ✅ Bloqueio de transação por saldo insuficiente (`InsufficientBalanceException`)
+- ✅ Proteção contra **BOLA/IDOR** (tentativa de movimentar conta de terceiros)
+- ✅ Garantia de idempotência em requisições repetidas
 
-Transferência bem-sucedida entre contas
-
-Erro por saldo insuficiente (InsufficientBalanceException)
-
-Proteção BOLA/IDOR (tentativa de transferência usando conta de outro usuário sem autorização)
-
-Idempotência de transações
-
-Para rodar os testes:
-
+Para executar os testes:
+```bash
 docker compose exec app php artisan test
+```
 
-📄 Licença
-Zentix Engenharia & Tecnologia
+---
 
-Quer dar vida ao seu projeto?
+## 📄 Licença & Contato
+
+**Licença:** Zentix Engenharia & Tecnologia
+
+### Quer dar vida ao seu projeto?
 Entre em contato conosco e solicite uma avaliação técnica ou orçamento sem compromisso.
 
-📲 Falar no WhatsApp: (62) 99646-6033
+- 📲 **WhatsApp:** [(62) 99646-6033](https://wa.me/5562996466033)
+- 📍 **Endereço:** Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
+- 🌐 **Website:** [zentix.eng.br](http://zentix.eng.br/)
 
-📍 Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
+---
 
-Zentix Engenharia & Tecnologia
+<div align="center">
 
-© 2022. Todos os direitos reservados
+**Zentix Engenharia & Tecnologia**  
+© 2022–2026. Todos os direitos reservados.  
+Desenvolvido por **[ZENTIX](http://zentix.eng.br/)**
 
-Desenvolvido por: ZENTIX
-
+</div>
