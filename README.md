@@ -1,14 +1,6 @@
 # 🛡️ FinTech API v1 - Laravel 11 (SaaS Backend)
 
-![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)
-![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
 API RESTful corporativa para gestão financeira e transferências entre contas bancárias, construída com **Laravel 11**, **PHP 8.3**, **PostgreSQL** e **Redis**.
-
----
 
 ## 📋 Sumário
 
@@ -21,27 +13,21 @@ API RESTful corporativa para gestão financeira e transferências entre contas b
 * [Testes Automatizados](#-testes-automatizados)
 * [Licença & Contato](#-licença--contato)
 
----
-
 ## 📖 Sobre o Projeto
 
 A **FinTech API v1** é uma solução backend projetada com foco em **segurança avançada**, **integridade transacional (ACID)** e **arquitetura limpa**. O sistema garante consistência financeira em cenários de alta concorrência e implementa defesas nativas contra as principais vulnerabilidades listadas no **OWASP API Security Top 10**.
 
----
-
 ## 🚀 Tecnologias & Stack
 
-| Camada | Tecnologia | Finalidade |
-| :--- | :--- | :--- |
-| **Linguagem** | PHP 8.3 | Tipagem estrita, performance e recursos modernos |
-| **Framework** | Laravel 11 | Arquitetura MVC, Eloquent ORM, Services e Policies |
-| **Autenticação** | Laravel Sanctum | Tokens revogáveis *stateless* com expiração |
-| **Banco de Dados** | PostgreSQL 16 | Transações ACID e *Pessimistic Locking* |
-| **Cache & Filas** | Redis 7 | *Rate Limiting* distribuído e chaves de idempotência |
-| **Infraestrutura** | Docker & Nginx | Ambiente isolado, reproduzível e pronto para produção |
-| **Qualidade** | PHPUnit / Pest & PSR-12 | Testes automatizados e padronização de código |
-
----
+| Camada | Tecnologia | Finalidade | 
+| ----- | ----- | ----- | 
+| **Linguagem** | PHP 8.3 | Tipagem estrita, performance e recursos modernos | 
+| **Framework** | Laravel 11 | Arquitetura MVC, Eloquent ORM, Services e Policies | 
+| **Autenticação** | Laravel Sanctum | Tokens revogáveis *stateless* com expiração | 
+| **Banco de Dados** | PostgreSQL 16 | Transações ACID e *Pessimistic Locking* | 
+| **Cache & Filas** | Redis 7 | *Rate Limiting* distribuído e chaves de idempotência | 
+| **Infraestrutura** | Docker & Nginx | Ambiente isolado, reproduzível e pronto para produção | 
+| **Qualidade** | PHPUnit / Pest & PSR-12 | Testes automatizados e padronização de código | 
 
 ## 🔒 Segurança (OWASP API Top 10)
 
@@ -59,8 +45,6 @@ A **FinTech API v1** é uma solução backend projetada com foco em **segurança
    * Middleware global injetando `X-Frame-Options`, `X-Content-Type-Options`, `Content-Security-Policy`, `Strict-Transport-Security` e `Referrer-Policy`.
 7. **Idempotência de Transações**
    * Suporte ao cabeçalho `X-Idempotency-Key` para impedir duplicidade de cobranças em retentativas de rede.
-
----
 
 ## 📁 Estrutura do Projeto
 
@@ -120,11 +104,10 @@ fintech-api-v1/
 └── README.md
 ```
 
----
-
 ## ⚡ Instalação & Execução
 
 ### Pré-requisitos
+
 * **Docker** e **Docker Compose** instalados na máquina.
 
 ### Passo a Passo
@@ -158,38 +141,37 @@ fintech-api-v1/
 
 > **🌐 Base URL da API:** `http://localhost:8080/api/v1`
 
----
-
 ## 📌 Documentação dos Endpoints
 
 ### 🔑 Autenticação
 
-| Método | Endpoint | Descrição | Auth |
-| :--- | :--- | :--- | :---: |
-| `POST` | `/api/v1/auth/register` | Registra um novo usuário e cria sua conta automaticamente | Não |
-| `POST` | `/api/v1/auth/login` | Autentica o usuário e retorna o *Bearer Token* | Não |
-| `POST` | `/api/v1/auth/logout` | Revoga o token de acesso atual | Sim |
-| `GET` | `/api/v1/auth/me` | Retorna os dados do usuário autenticado | Sim |
+| Método | Endpoint | Descrição | Auth | 
+| ----- | ----- | ----- | ----- | 
+| `POST` | `/api/v1/auth/register` | Registra um novo usuário e cria sua conta automaticamente | Não | 
+| `POST` | `/api/v1/auth/login` | Autentica o usuário e retorna o *Bearer Token* | Não | 
+| `POST` | `/api/v1/auth/logout` | Revoga o token de acesso atual | Sim | 
+| `GET` | `/api/v1/auth/me` | Retorna os dados do usuário autenticado | Sim | 
 
 ### 🏦 Contas Bancárias
 
-| Método | Endpoint | Descrição | Auth |
-| :--- | :--- | :--- | :---: |
-| `GET` | `/api/v1/accounts` | Lista todas as contas pertencentes ao usuário logado | Sim |
-| `GET` | `/api/v1/accounts/{account}/balance` | Consulta o saldo atual da conta (validado via `AccountPolicy`) | Sim |
-| `GET` | `/api/v1/accounts/{account}/statement` | Retorna o extrato paginado de movimentações | Sim |
+| Método | Endpoint | Descrição | Auth | 
+| ----- | ----- | ----- | ----- | 
+| `GET` | `/api/v1/accounts` | Lista todas as contas pertencentes ao usuário logado | Sim | 
+| `GET` | `/api/v1/accounts/{account}/balance` | Consulta o saldo atual da conta (validado via `AccountPolicy`) | Sim | 
+| `GET` | `/api/v1/accounts/{account}/statement` | Retorna o extrato paginado de movimentações | Sim | 
 
 ### 💸 Transações Financeiras
 
-| Método | Endpoint | Descrição | Auth |
-| :--- | :--- | :--- | :---: |
-| `POST` | `/api/v1/transactions/transfer` | Executa transferência atômica entre contas | Sim |
-| `POST` | `/api/v1/transactions/deposit` | Realiza aporte/depósito na conta informada | Sim |
-| `GET` | `/api/v1/transactions/{transaction}` | Exibe o comprovante detalhado de uma transação | Sim |
+| Método | Endpoint | Descrição | Auth | 
+| ----- | ----- | ----- | ----- | 
+| `POST` | `/api/v1/transactions/transfer` | Executa transferência atômica entre contas | Sim | 
+| `POST` | `/api/v1/transactions/deposit` | Realiza aporte/depósito na conta informada | Sim | 
+| `GET` | `/api/v1/transactions/{transaction}` | Exibe o comprovante detalhado de uma transação | Sim | 
 
 #### Exemplo de Requisição — Transferência (`POST /api/v1/transactions/transfer`)
 
 **Headers:**
+
 ```http
 Authorization: Bearer <seu_token_aqui>
 X-Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
@@ -198,6 +180,7 @@ Accept: application/json
 ```
 
 **Body (JSON):**
+
 ```json
 {
   "payer_account_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
@@ -205,9 +188,8 @@ Accept: application/json
   "amount": 15000
 }
 ```
-> *Nota: O campo `amount` representa valores em centavos (`15000` = **R\$ 150,00**).*
 
----
+> *Nota: O campo `amount` representa valores em centavos (`15000` = **R\$ 150,00**).*
 
 ## 🧪 Testes Automatizados
 
@@ -220,11 +202,10 @@ A suíte de testes de integração valida os fluxos críticos da aplicação:
 * ✅ Garantia de idempotência em requisições repetidas
 
 Para executar os testes:
+
 ```bash
 docker compose exec app php artisan test
 ```
-
----
 
 ## 📄 Licença & Contato
 
@@ -234,9 +215,9 @@ docker compose exec app php artisan test
 
 Entre em contato conosco e solicite uma avaliação técnica ou orçamento sem compromisso.
 
-* 📲 **WhatsApp:** <a href="https://wa.me/5562996466033" target="_blank" rel="noopener noreferrer">(62) 99646-6033</a>
-* 📍 **Endereço:** Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
-* 🌐 **Website:** <a href="http://zentix.eng.br/" target="_blank" rel="noopener noreferrer">zentix.eng.br</a>
+- 📲 **WhatsApp:** <a href="https://wa.me/5562996466033" target="_blank" rel="noopener noreferrer">(62) 99646-6033</a>
+- 📍 **Endereço:** Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
+- 🌐 **Website:** <a href="http://zentix.eng.br/" target="_blank" rel="noopener noreferrer">zentix.eng.br</a>
 
 ---
 
