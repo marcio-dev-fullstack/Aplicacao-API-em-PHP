@@ -36,62 +36,6 @@ API RESTful para gestão financeira e transferências entre contas bancárias, c
 
 ## 📁 Estrutura do Projeto
 
-```
-fintech-api-v1/
-├── app/
-│   ├── Exceptions/
-│   │   ├── InsufficientBalanceException.php
-│   │   └── InvalidTransactionException.php
-│   ├── Http/
-│   │   ├── Controllers/Api/
-│   │   │   ├── AuthController.php
-│   │   │   ├── AccountController.php
-│   │   │   └── TransactionController.php
-│   │   ├── Middleware/
-│   │   │   └── SecurityHeaders.php
-│   │   ├── Requests/
-│   │   │   ├── RegisterRequest.php
-│   │   │   ├── LoginRequest.php
-│   │   │   └── TransferRequest.php
-│   │   └── Resources/
-│   │       ├── AccountResource.php
-│   │       ├── TransactionResource.php
-│   │       └── UserResource.php
-│   ├── Models/
-│   │   ├── User.php
-│   │   ├── Account.php
-│   │   └── Transaction.php
-│   ├── Policies/
-│   │   └── AccountPolicy.php
-│   └── Services/
-│       └── TransferService.php
-├── bootstrap/
-│   └── app.php
-├── config/
-│   ├── auth.php
-│   ├── cors.php
-│   └── sanctum.php
-├── database/
-│   └── migrations/
-│       ├── 0001_01_01_000000_create_users_table.php
-│       ├── 0001_01_01_000001_create_personal_access_tokens_table.php
-│       ├── 2026_01_01_000000_create_accounts_table.php
-│       └── 2026_01_01_000001_create_transactions_table.php
-├── routes/
-│   └── api.php
-├── tests/
-│   ├── Feature/
-│   │   ├── AuthTest.php
-│   │   └── TransferTest.php
-│   └── TestCase.php
-├── docker-compose.yml
-├── Dockerfile
-├── nginx.conf
-├── .env.example
-├── composer.json
-└── README.md
-```
-
 ---
 
 ## ⚡ Instalação & Execução com Docker
@@ -104,102 +48,88 @@ fintech-api-v1/
 1. **Descompactar o arquivo v1.zip e acessar o diretório:**
    ```bash
    unzip v1.zip
+
    cd fintech-api-v1
-   ```
 
-2. **Configurar Variáveis de Ambiente:**
-   ```bash
    cp .env.example .env
-   ```
 
-3. **Subir os Containers (PHP 8.3, PostgreSQL, Redis, Nginx):**
-   ```bash
    docker compose up -d --build
-   ```
 
-4. **Instalar Dependências e Gerar Chave da Aplicação:**
-   ```bash
    docker compose exec app composer install
+
    docker compose exec app php artisan key:generate
-   ```
 
-5. **Rodar as Migrations:**
-   ```bash
    docker compose exec app php artisan migrate
-   ```
 
-6. **Rodar a Suíte de Testes:**
-   ```bash
    docker compose exec app php artisan test
-   ```
 
-A API estará disponível em `http://localhost:8080/api/v1`.
+   A API estará disponível em http://localhost:8080/api/v1.
 
----
+📌 Principais Endpoints
+🔑 Autenticação
+POST /api/v1/auth/register — Registrar novo usuário + conta automática
 
-## 📌 Principais Endpoints
+POST /api/v1/auth/login — Autenticar e obter Bearer Token
 
-### 🔑 Autenticação
-- `POST /api/v1/auth/register` — Registrar novo usuário + conta automática
-- `POST /api/v1/auth/login` — Autenticar e obter Bearer Token
-- `POST /api/v1/auth/logout` — Revogar token atual (Autenticado)
-- `GET /api/v1/auth/me` — Detalhes do usuário autenticado
+POST /api/v1/auth/logout — Revogar token atual (Autenticado)
 
-### 🏦 Contas Bancárias
-- `GET /api/v1/accounts` — Listar contas do usuário logado
-- `GET /api/v1/accounts/{account}/balance` — Consultar saldo da conta (Requer autorização de Policy)
-- `GET /api/v1/accounts/{account}/statement` — Extrato de movimentações paginado
+GET /api/v1/auth/me — Detalhes do usuário autenticado
 
-### 💸 Transações Financeiras
-- `POST /api/v1/transactions/transfer` — Realizar transferência atômica com Lock Pessimista
-  - **Headers recomendados:** `Authorization: Bearer <token>`, `X-Idempotency-Key: <uuid-v4>`
-  - **Body JSON:**
-    ```json
-    {
-      "payer_account_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
-      "payee_account_id": "9b1deb4d-4c8e-5cfe-0cee-3c1e8c4edc7e",
-      "amount": 15000
-    }
-    ```
-    *(Note: `15000` centavos = R$ 150,00)*
+🏦 Contas Bancárias
+GET /api/v1/accounts — Listar contas do usuário logado
 
-- `POST /api/v1/transactions/deposit` — Simulação de depósito/aporte na conta
-- `GET /api/v1/transactions/{transaction}` — Consultar comprovante de transação
+GET /api/v1/accounts/{account}/balance — Consultar saldo da conta (Requer autorização de Policy)
 
----
+GET /api/v1/accounts/{account}/statement — Extrato de movimentações paginado
 
-## 🧪 Testes Automatizados
+💸 Transações Financeiras
+POST /api/v1/transactions/transfer — Realizar transferência atômica com Lock Pessimista
 
+Headers recomendados: Authorization: Bearer <token>, X-Idempotency-Key: <uuid-v4>
+
+Body JSON:
+
+{
+  "payer_account_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+  "payee_account_id": "9b1deb4d-4c8e-5cfe-0cee-3c1e8c4edc7e",
+  "amount": 15000
+}
+
+*(Note: `15000` centavos = R$ 150,00)*
+POST /api/v1/transactions/deposit — Simulação de depósito/aporte na conta
+
+GET /api/v1/transactions/{transaction} — Consultar comprovante de transação
+
+🧪 Testes Automatizados
 O projeto conta com testes de integração cobrindo:
-- Registro e autenticação de usuários
-- Transferência bem-sucedida entre contas
-- Erro por saldo insuficiente (`InsufficientBalanceException`)
-- Proteção BOLA/IDOR (tentativa de transferência usando conta de outro usuário sem autorização)
-- Idempotência de transações
+
+Registro e autenticação de usuários
+
+Transferência bem-sucedida entre contas
+
+Erro por saldo insuficiente (InsufficientBalanceException)
+
+Proteção BOLA/IDOR (tentativa de transferência usando conta de outro usuário sem autorização)
+
+Idempotência de transações
 
 Para rodar os testes:
-```bash
+
 docker compose exec app php artisan test
-```
 
----
+📄 Licença
+Zentix Engenharia & Tecnologia
 
-## 📄 Licença
-Este projeto é de código aberto sob a licença [MIT](LICENSE).
-
----
-
-### Quer dar vida ao seu projeto?
-
+Quer dar vida ao seu projeto?
 Entre em contato conosco e solicite uma avaliação técnica ou orçamento sem compromisso.
 
-📲 **[Falar no WhatsApp: (62) 99646-6033](https://wa.me/5562996466033)**
+📲 Falar no WhatsApp: (62) 99646-6033
 
 📍 Av. Portugal, 1148, Quadra L29, Lote 1E, Sala C2501, Setor Marista, Goiânia - GO, CEP 74150-030
 
----
+Zentix Engenharia & Tecnologia
 
-**Zentix Engenharia & Tecnologia**  
-© 2022. Todos os direitos reservados  
-Desenvolvido por: **[ZENTIX](http://zentix.eng.br/)**
+© 2022. Todos os direitos reservados
+
+Desenvolvido por: ZENTIX
 
